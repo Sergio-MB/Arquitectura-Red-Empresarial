@@ -1,0 +1,1503 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Informe de práctica para la asignatura
+% Fundamentos de Redes de Computadoras
+% Grado en Ingeniería Informática
+% Universidad de Valladolid
+%
+% Licencia:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PAQUETES Y CONFIGURACION DE DOCUMENTO
+%----------------------------------------------------------------------------------------
+
+\documentclass[a4paper,onecolumn,11pt]{article}
+
+%
+% Idioma y juego de caracteres
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% otros paquetes
+\usepackage{graphicx} % Necesario para la inclusión de imágenes
+\usepackage{booktabs} % Necesario para la mejora en la decoración de tablas
+\usepackage[toc,lot,lof]{multitoc} % Necesario para mostrar los índices a dos columnas
+
+%----------------------------------------------------------------------------------------
+%	INFORMACION DEL DOCUMENTO
+%----------------------------------------------------------------------------------------
+
+% Componer el título
+\title{
+\textsc{\normalsize Diseño, Administración y Seguridad de Redes} \\
+\vspace{1cm}
+\hrule
+\vspace{0.4cm}
+Diseño de una Red % poner aquí el título del documento
+\vspace{0.5cm}
+\hrule
+}
+\author{ \textsc{Sergio Muñumer} \\  \textsc{David Pastor} } % Nombres de los autores
+
+\date{\today} % Fecha del informe
+
+\begin{document}
+
+\maketitle % insertar el título
+
+% Comienzo del índice
+
+\hrule
+
+\tableofcontents % Componer y mostar el índice
+
+\listoffigures % Componer y mostrar el índice de tablas
+
+
+\listoftables % Componer y mostrar el índice de figuras
+
+\hrule
+
+% Fin del índice
+
+
+
+%----------------------------------------------------------------------------------------
+%	CONTENIDO DEL DOCUMENTO
+%----------------------------------------------------------------------------------------
+
+
+\section{Resumen Ejecutivo}
+
+Este documento presenta el diseño de la red basado en la actividad de un periódico moderno. La organización en cuestión ofrece servicios de información 
+clásicos (basados en papel impreso) y servicios de información digitales (basados en plataforma online), gracias a la infraestructura descrita 
+en el documento presente.
+
+Dicha infraestructura será necesaria para proveer los servicios de red principales (nombre, DNS, DHCP, control/mantenimiento de dispositivos), así como el acceso a Internet a través de varios enlaces contratados con distintos proveedores 
+de servicios de acceso a Internet (ISP), logrando la diversidad de circuitos, y como consecuencia una alta disponibilidad de la red. El diseño soporta escalabilidad, permitiendo el desarrollo y crecimiento de la empresa, debido a su estructura en 2 partes bien 
+diferenciadas: la parte referente a la actividad interna de la organización y la parte externa cuya finalidad es mantener la plataforma 
+digital de noticias.
+
+La infraestructura permitirá el acceso de los trabajadores a sus recursos desde diferentes localizaciones, incluyendo soporte para trabajo remoto. El portal online estará situado en una zona desmilitarizada, posterior al firewall, y aíslado de la red interna. El objetivo es mejorar las prestaciones en este segmento crítico de la red, conllevando una mejora en las condiciones de trabajo para los empleados de la organización, aumento de la calidad para los visitantes del portal web y por tanto, mejorando los beneficios de la organización.
+
+\section{Objetivo del Proyecto}
+
+%Diseño e implementación de una infraestructura de red específica para soportar la actividad de un periódico, proveedor de servicios de información impresos/digitales.
+
+El objetivo principal del proyecto es dotar de una infraestructura de red rápida y fiable, diseñada espećíficamente para satisfacer las necesidades inherentes de la actividad de un periódico, facilitando la expansión de la empresa, habilitando su llegada a nuevos mercados y estableciendo unas condiciones óptimas de trabajo para los empleados.
+
+\section{Alcance del Proyecto}
+
+%El presente proyecto trata del diseño e implementación de la red de un periodico digital, agilizando y facilitando el proceso de desarrollo de la organización, y ofreciendo una plataforma online de noticias con las mejores prestaciones.
+
+Instalación e implementación de una red confeccionada para facilitar el crecimiento de la organización, permitiendo su ampliación hasta 6000 trabajadores, sin entrar en grandes presupuestos sobre el material. Premiando la escalabilidad y la calidad del tráfico, la infraestructura soporta balanceo de carga, ofreciendo condiciones óptimas para el desarrollo de la actividad de la empresa en todo momento, contando con contramedidas planificadas en situaciones excepcionales de carga.
+
+El diseño se basa únicamente en las necesidades de la organización. Está, tiene dos facetas de cara al público, por lo que el diseño también implementa dos sectores. Podía ser una cuestión práctica, sin embargo, es una cuestión de seguridad. El aislamiento de ambas actividades proporciona una buena cobertura frente atacantes externos, que junto con la implementación de mecanismos eficientes de seguridad, dan lugar a una situación cómoda donde poder almacenar información sensible al público, fuentes de información privadas, etc.
+
+En definitiva, la creación de la infraestructura proporcionará un alto grado de confidencialidad, garantizando la unicidad de las actividades, tratando ambas tareas como servicios diferenciados e 
+independientes. 
+
+\section{Requisitos de Diseño}
+
+En esta sección se definen los requisitos de diseño de la red, atendiendo a dos dimensiones. En primer lugar se concretarán los requisitos de 
+la red desde la perspectiva del negocio, que harán posible mejorar los servicios que ofrece el periódico a sus clientes y garantizar la 
+fiabilidad de la red, facilitando la labor diaria de los empleados. Estos requisitos del negocio van a determinar los objetivos técnicos del 
+desarrollo de la red.
+
+\subsection{Requisitos del Negocio}
+El proyecto de diseño de la red permitirá la creación de un canal de comunicaciones, 
+abriendo puertas a la organización a nuevos mercados del negocio.
+El diseño proveerá acceso a servicios web, tanto internos como externos, manteniendo la independencia entre ambas partes.
+De cara a la visión interna de la organización, el proyecto garantiza el acceso a los servidores de administración, y a las aplicaciones 
+necesarias en la labor diaria del periódico. Al mismo tiempo, garantiza el acceso a clientes a la plataforma online pública de la organización. 
+La gestión de las 2 caras del diseño se llevará a cabo de manera compartida, considerando los costes derivados de una gestión aislada de cada 
+parte.
+
+El segmento de acceso a internet estará compuesto por 2 enlaces contratados con 2 proveedores de servicio de internet  distintos, es una 
+cuestión de prestaciones y redundancia. Se dispondrá de un enlace WAN con la empresa de servicio de impresión garantizando la 
+disponibilidad, asegurando plazos de trabajo para la organización.
+
+El diseño de la red contempla la posibilidad de teletrabajo. Se establecerán medidas de prevención para facilitar el acceso privado a los 
+recursos de la empresa, por parte de los trabajadores de la empresa.
+Se establecerán las medidas de prevención oportunas para asegurar la red frente a ataques provientes de Internet y que pudieran
+dificultar o impedir ofrecer el servicio de navegación a sus clientes.
+
+La enumeración de los requisitos del negocio puede tener la forma de la Tabla~\ref{tab:requisitosNegocio}.
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Requisitos del Negocio}
+\begin{center}
+\begin{tabular}{rp{.7\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Num.} &  \textbf{Descripción del Requisito} & \textbf{Crítico (S/N)} \\
+\toprule
+1 & La red soportará la creación de un canal de comunicaciones, abriendo puertas a la organización a nuevos mercados del negocio. & S \\ \midrule
+2 & En donde sea posible se utilizarán enlaces de fibra óptica & N \\\midrule
+3 & La red deberá ser capaz de permitir el acceso a la red Internet & S \\\midrule
+4 & La red permitirá teletrabajo & S \\\midrule
+5 & La red permitirá el acceso a servicios web, tanto internos como externos, manteniendo la independencia entre ambas partes.& S \\\midrule
+6 & La red garantiza el acceso a los servidores de administración, y a las aplicaciones necesarias en la labor diaria del periódico.& S \\\midrule
+7 & La red garantiza el acceso a clientes a la plataforma online pública de la organización. & S \\\midrule
+8 & La red permitirá establecer alianzas con otras compañías. & S \\\midrule
+9 & La red permitirá la conexión con el exterior & N \\\midrule
+10 & El diseño de la red contara con multiples salidas a internet con diferentes proveedores & N \\\midrule
+11 & La red dispone de mecanismos de proteccion frente a ataques provientes de Internet y que pudieran dificultar o impedir ofrecer el servicio de navegación a sus clientes. & S \\\midrule
+12 & La red deberá mejorar la accesibilidad para sus clientes. & S \\ \midrule
+13 & La red facilitará la expansión del negocio. & S \\
+
+
+
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:requisitosNegocio}
+\end{table}
+
+
+\subsection{Requisitos Técnicos}
+
+Para diseñar una red que permita alcanzar los requisitos del negocio se
+establecen los siguientes requisitos técnicos que se recogen en la Tabla~\ref{tab:requisitosTecnicos}.
+
+
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Requisitos Técnicos}
+\begin{center}
+\begin{tabular}{rp{.7\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Num.} &  \textbf{Descripción del Requisito} & \textbf{Crítico (S/N)}\\
+\toprule
+
+1 & La red soportará un ancho de banda mínimo de 100 Mpbs y
+estará soportada por enlaces UTP Cat 6  & S \\ \midrule
+2 & La red permitirá el acceso a recursos por parte de los empleados desde cualquier ubicación & S \\ \midrule
+3 & La red permitirá el aislamiento del tráfico en función del departamento & S \\ \midrule
+4 & La red realizará la configuración automatica de los hosts & S \\ \midrule
+5 & La red contará con diversidad de circuitos & N \\ \midrule
+6 & La red implementará un firewall. & S \\ \midrule
+7 & Se maximizará la disponibilidad de la red. & S \\ \midrule
+8 & La red implementará redundancia en los routers. & S \\ \midrule
+9 & La red implementará redundancia en los switches. & S \\ \midrule
+10 & La red implementará métodos de balanceo de carga. & S \\ \midrule
+11 & La red dispondrá de una DMZ & S \\ \midrule
+12 & La red implementará tecnología VPN. & S \\ \midrule
+13 & La conexion de servidores y la capa de el nucleo se realizará mediante fibra óptica & S \\ %\midrule
+%8 & AAAA & S \\
+
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:requisitosTecnicos}
+\end{table}
+
+
+\subsection{Grupos de Usuarios y Almacenamiento de Datos}
+
+El proyecto del diseño de la red contempla la existencia de varios 
+grupos con roles diferenciados,
+estableciendo una división entre el ámbito interno y externo de la 
+organización. La cara externa     
+esta compuesta por dos partes la de los clientes y de 
+administración del servicio web.
+
+La parte interna constará de tantos grupos de usuarios como roles 
+haya en el desarrollo de la actividad de la organización, contando 
+a mayores un trato especial para los usuarios de teletrabajo.
+
+
+El proyecto incluye 2 servidores principales, uno dedicado a la administración de la organización y al desarrollo de su actividad (SRV-A), 
+y otro para el servicio online ofrecido a los clientes (SRV-B). Un tercer servidor (SRV-C) para el servicio de nóminas, dedicado a la parte de administración y contabilidad de la empresa. Además el proyecto considera la posiblidad de redundancia 
+en el almacenamiento de datos, manteniendo activo un tercer servidor (SRV-Z) de recuperación del sistema (Ver tabla ~\ref{tab:gruposUsuarios}.). A mayores tendríamos los servidores proveedores de servicios de configuración automática DNS (SRV-S1) y DHCP (SRV-S2).
+
+A continuación, se muestran los principales almacenes de datos (
+servidores) y su localización (Ver tabla ~\ref{tab:servidores}).
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Grupos de Usuarios}
+\begin{center}
+\begin{tabular}{p{0.2\textwidth}p{0.15\textwidth}p{0.2\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{Grupo Usuarios} & \textbf{Tamaño} & \textbf{Localización} & \textbf{Aplicaciones Utilizadas}\\
+\toprule
+Dirección & 10& Edificio A & Aplicacion de streaming, Correo, Web, Bases de datos \\ \midrule
+Redacción  &  30 & Edificio A & Servidor de fotografia y video, Correo, Web,Bases de datos \\ \midrule
+Jefes de sección &  10 & Edificio A  & Servidor de fotografia y video, Correo, Web, Bases de datos, Servicio de impresion \\ \midrule
+Maquetación  &  30& Edificio A  & Servidor de fotografia y video, Correo, Web, Bases de datos \\ \midrule
+Corrección &  30 & Edificio A  & Servidor de fotografia y video, Correo, Web, Bases de datos \\ \midrule
+Teletrabajo & 15 & X & Aplicacion de streaming, Correo, Web, Bases de datos, Teletrabajo \\ \midrule
+Contabilidad & 5 & Edificio A & Servicio de contabilidad, Nóminas, Administrativo \\ \midrule
+Administración Interna & 5 & Edificio B & Servicio de Backup, Bases de datos \\ \midrule
+Administración Web& 5 & Edificio B & Servicio de Backup, Bases de datos\\ \midrule
+Usuarios online & ¿? & X & Web \\
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:gruposUsuarios}
+\end{table}
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Servidores}
+\begin{center}
+\begin{tabular}{p{0.20\textwidth}p{0.2\textwidth}p{0.2\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{Servidor} & \textbf{Localización} & \textbf{Aplicaciones} & \textbf{Usado por Grupo Usuarios}\\
+\toprule
+SVR-A & Edificio A, planta Baja & Aplicacion de streaming, Base de datos, Teletrabajo, Servicio de impresión, Servicio de fotografía y vídeo & Dirección, Redacción, Jefes de sección, Maquetación, Corrección \\ \midrule
+SVR-B & Edificio A, planta Baja & Servicio Web,Servidor de correo & Usuarios online, Administración Web\\ \midrule
+SVR-C & Edificio A, planta Baja & Servicio de contabilidad, Nóminas, Administrativo & Contabilidad\\ \midrule
+SVR-S1 & Edificio A, planta Baja & DNS & Red Interna\\ \midrule
+SVR-S2 & Edificio A, planta Baja & DHCP  & Red Interna\\ \midrule
+SVR-Z & Edificio A, planta Baja & Servicio de Backup  & Administración interna, Administracion web\\
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:servidores}
+\end{table}
+
+\subsection{Aplicaciones en Red}
+
+La red esta diseñada para soportar la carga producida por 
+aplicaciones de streaming(vídeo/audio)\footnote{Las estimaciones están basadas en los cálculos proporcionados por Microsoft\cite{Streaming}}. La gestión sobre la base de datos, el servicio de correo electrónico interno y los de impresión fotografía y video están soportados por el SRV-A.
+El servicio web online y el de trabajo remoto se soportan en un servidor SRV-B, por motivos de seguridad y prestaciones, donde almacenaremos la información de los 
+usuarios online en una base de datos aíslada de la actividad interna.
+El servicio contable, referente a lo administrativo, nóminas, etc, se soporta en el servidor SRV-C.
+El servicio de backup/mantenimiento es sostenido por el SRV-Z.
+En esta sección se enumeran y caracterizan las aplicaciones de red (Ver tabla~\ref{tab:aplicacionesRed}).
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Aplicaciones en red y características del tráfico asociado}
+\begin{center}
+\begin{tabular}{p{0.2\textwidth}p{0.07\textwidth}p{0.07\textwidth}p{0.25\textwidth}p{0.15\textwidth}p{0.1\textwidth}p{0.25\textwidth}}
+\toprule
+\textbf{Aplicación} & \textbf{Nueva (S/N)} & \textbf{Crítica (S/N)} & \textbf{Grupo-Usuarios} & \textbf{Servidor} & \textbf{Ancho de Banda Estimado}\\
+\toprule
+
+Aplicacion de streaming & S & S & Teletrabajo,Dirección & SVR-A  & 500 Kbps \\ \midrule
+Bases de datos & S & S & Todos & SVR-A  & 100 Kbps \\ \midrule
+Servidor de correo & S & N & Todos & SVR-B  &  50 Kbps \\\midrule
+Teletrabajo & S & S & Teletrabajo & SVR-A  &  256 Kbps \\\midrule
+Servicio de impresion & S & S & Jefes de sección,Redacción & SVR-A  &  50 Kbps \\\midrule
+Servicio Web & S & N & Usuarios online,Teletrabajo & SVR-B  &  256 Kbps \\\midrule
+Servicio de Backup & S & S & Administración Interna y Web & SVR-Z  &  1000 Kbps \\\midrule
+Servicio Contable & S & S & Contabilidad & SVR-C  &  300 Kbps \\\midrule
+Servidor de fotografia y video & S & S & Todos & SVR-A  & 500 Kbps \\ 
+\bottomrule
+
+\end{tabular}
+\end{center}
+\label{tab:aplicacionesRed}
+\end{table}
+
+
+\section{Diseño Lógico}
+
+En esta sección se muestran los aspectos de diseño de la red relacionados
+con la topología y los esquemas de denominación y numeración de los
+dispositivos, así como los principales protocolos implicados en la red.
+
+%\begin{itemize}
+%\item Topología de la red, incluyendo uno o más diagramas que ilustren la arquitectura lógica de la nueva red.
+%\item Un modelo para identificar (nombrar) a los dispositivos.
+%\item Un modelo para asignar direcciones a los segmentos y dispositivos.
+%\item Enumeración de los protocolos de red (tanto conmutación como encaminamiento) seleccionados para implementar el diseño, y cualquier %recomendación específica asociada con ellos.
+%\item Recomendación sobre mecanismos y productos relacionados con la seguridad, incluyendo un resumen de las políticas de seguridad.
+%\item Discusión sobre el diseño propuesto, destacando las elecciones realizadas donde existieran distintas alternativas, en relación con los %objetivos y requisitos marcados para el mismo.
+%\end{itemize}
+
+\subsection{Topología}
+
+La topología de la red es un reflejo directo de la disposición de los elementos
+a conectar y de los requisitos impuestos por el negocio. Desde una
+perspectiva de alto nivel, la red a diseñar responderá al diseño mostrado en
+la figura~\ref{fig:diagrama}.
+
+\begin{figure}[thbp]
+\centering
+\includegraphics[width=0.8\textwidth]{esquemas/diagrama.jpg}
+\caption{Diagrama del Diseño Lógico de la Red}
+\label{fig:diagrama}
+\end{figure}
+
+Entrando un poco más en detalle sobre la distribución de dispositivos, nos encontramos con 3 capas especializadas, más la DMZ:
+\begin{itemize}
+\item Capa del núcleo (Figura~\ref{fig:nucleo}).
+\begin{figure}[thbp]
+\centering
+\includegraphics[width=0.8\textwidth]{esquemas/nucleo.png}
+\caption{Figura del Núcleo de la Red}
+\label{fig:nucleo}
+\end{figure}
+\item Capa de distribución (Figura~\ref{fig:distri}).
+\begin{figure}[thbp]
+\centering
+\includegraphics[width=0.8\textwidth]{esquemas/distri.png}
+\caption{Figura Capa de Distribución}
+\label{fig:distri}
+\end{figure}
+\item Capa de acceso (Figura~\ref{fig:acceso}).
+\begin{figure}[thbp]
+\centering
+\includegraphics[width=0.8\textwidth]{esquemas/acceso.png}
+\caption{Figura Capa de Acceso}
+\label{fig:acceso}
+\end{figure}
+\item DMZ (Figura~\ref{fig:dmz}).
+\begin{figure}[thbp]
+\centering
+\includegraphics[width=0.8\textwidth]{esquemas/dmz.png}
+\caption{Figura DMZ}
+\label{fig:dmz}
+\end{figure}
+\end{itemize}
+\subsection{Nombres}
+
+La asignación de nombres de los dispositivos, sigue la lógica descrita a continuación (Ver tabla~\ref{tab:esquemaNombres}).
+
+\begin{itemize}
+
+\item Para los Router, \textsf{RT}, seguidas del identificador de la sede física, y del identificador único del dispositivo. 
+El router que implementa el firewall recibirá el siguiente identificador: \textsf{RT-X-F}, siendo \textsf{X} el identificador de la sede física. Los routeres que soportan los enlaces WAN, reciben el siguiente identificador: \textsf{RT-X-WY}, siendo \textsf{X} el identificador de la sede, e \textsf{Y} el identificador único de conexiones WAN. En caso de establecer un nuevo enlace WAN, el router que los soporte recibirá el siguiente nombre: \textsf{RT-X-W2}. El router principal de la sede A sería: \textsf{RT-A-01}, y el firewall de la sede B: \textsf{RT-B-F}.
+
+\item Para los Switch, \textsf{SW}, seguidas del identificador de la sede física unido a una letra que determina su nivel (Distribución D, Acceso A), más el
+identificador único del dispositivo. Por ejemplo, el switch principal de Distribuccion de la sede A sería: \textsf{SW-AD-01}, y el tercero de la sede B en el nivel de acceso: \textsf{SW-BA-03}.
+
+\item La identificación de los servidores seguirá la lógica usada hasta ahora, utilizando \textsf{SRV}, más la letra identificadora del dispositivo. El orden para asignar letras
+será alfabético, reservando \textsf{W,X,Y,Z} para los dispositivos de recuperación/mantemiento y la \textsf{S} para servicios.
+Hacemos una distinción para aquellos servidores proveedores de servicios de configuración, asignándoles la letra \textsf{S}, más un número identificador del servicio. Por ejemplo, el servidor de DNS será \textsf{SRV-S2}.
+
+\item Para la estaciones de trabajo, \textsf{ET}, seguidas de su localizador físico y de su identificador único de dispositivo. Así, la cuarta estación de trabajo de la sede A sería: \textsf{ET-A-04} y la decimosegunda de la sede B: \textsf{ET-B-12}.
+\end{itemize}
+La relación de dispositivos instalados en la red se dispone en las tablas ~\ref{tab:esquemaNombres} y~\ref{tab:devInstalados}.
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Esquema de nombres}
+\begin{center}
+\begin{tabular}{p{0.4\textwidth}p{0.1\textwidth}}
+\toprule
+\textbf{Dispositivo} & \textbf{Nombre}\\
+\toprule
+
+Estación de trabajo & ET \\\midrule
+Servidor &	SRV \\\midrule
+Router & RT \\\midrule
+Switch & SW\\
+\bottomrule
+
+\end{tabular}
+\end{center}
+\label{tab:esquemaNombres}
+\end{table}
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Disposotivos instalados}
+\begin{center}
+\begin{tabular}{p{0.2\textwidth}p{0.2\textwidth}p{0.2\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Tipo} & \textbf{Ubicación} & \textbf{Función}\\
+\toprule
+
+RT-A-F & Router & Edificio A & Firewall \\\midrule
+RT-A-W1 & Router & Edificio A & Enlace WAN-1 \\\midrule
+RT-A-01 & Router & Edificio A & Core \\\midrule
+RT-A-02 & Router & Edificio A & Core \\\midrule
+SW-AD-01 & Switch & Edificio A & Distribución \\\midrule
+SW-AD-02 & Switch & Edificio A & Distribución \\\midrule
+SW-AA-01 & Switch & Edificio A & Acceso \\\midrule
+SW-AA-02 & Switch & Edificio A & Acceso \\\midrule
+SW-AA-03 & Switch & Edificio A & Acceso \\\midrule
+SW-AA-04 & Switch & Edificio A & Acceso \\\midrule
+SW-AA-05 & Switch & Edificio A & Acceso \\\midrule
+SW-AA-06 & Switch & Edificio A & Acceso \\\midrule
+SRV-A & Servidor & Edificio A & Servicio Interno \\\midrule
+SRV-B & Servidor & Edificio A & Servicio Externo \\\midrule
+SRV-C & Servidor & Edificio A & Servicio Contable \\\midrule
+SRV-S0 & Servidor & Edificio A & DNS Autorizado \\\midrule
+SRV-S1 & Servidor & Edificio A & Servicio DHCP \\\midrule
+SRV-S2 & Servidor & Edificio A & Servicio DNS \\\midrule
+SRV-Z & Servidor & Edificio A & Servicio Recuperación \\\midrule
+ET-A-X & Servidor & Edificio A & Estaciones de trabajo / X perteneciente (1,120) \\
+\bottomrule
+
+\end{tabular}
+\end{center}
+\label{tab:devInstalados}
+\end{table}
+
+
+
+\subsection{Direcciones}
+
+
+Para cumplir los requisitos de aislamiento de tráfico interdepartamental, facilidad administrativa y
+futura expansión, hemos dividido la LAN de la empresa en varias subredes. Estas subredes se enumeran en la tabla~\ref{tab:direccionamiento}.
+
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Direccionamiento}
+\begin{center}
+\begin{tabular}{p{.3\textwidth}p{.2\textwidth}p{.2\textwidth}p{.2\textwidth}}
+\toprule
+\textbf{Segmento o Subred} & \textbf{Dirección IP/Máscara} & \textbf{Router por Defecto} & \textbf{Servidor DHCP}\\
+\toprule
+Dirección & 192.168.10.0/24 &  192.168.10.1/24 & 192.168.60.10/24 \\ \midrule
+Jefes Sección & 192.168.20.0/24 &  192.168.20.1/24 & 192.168.60.10/24  \\ \midrule
+Maquetación & 192.168.30.0/24 &  192.168.30.1/24 & 192.168.60.10/24  \\ \midrule
+Correción & 192.168.40.0/24 &  192.168.40.1/24 & 192.168.60.10/24 \\ \midrule
+Redacción & 192.168.50.0/24 &  192.168.50.1/24 & 192.168.60.10/24 \\ \midrule
+Servidores & 192.168.60.0/24 &  192.168.60.1/24 & \\ \midrule
+Contabilidad & 192.168.70.0/24 &  192.168.70.1/24 & 192.168.60.10/24 \\ \midrule
+Segmento 1 & 192.168.100.0/24 &  192.168.100.2/24 & \\ \midrule
+Segmento 2 & 192.168.200.0/24  & 192.168.200.2/24 &  \\ \midrule
+DMZ & 192.168.110.0/24 & 192.168.110.2/24 & \\
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:direccionamiento}
+\end{table}
+
+En la tabla~\ref{tab:VLANs} se muestra la correspondecia entre grupos de usuarios, subred y las VLANs designadas.
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{VLANs}
+\begin{center}
+\begin{tabular}{p{.3\textwidth}p{.25\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Grupo Usuarios} &  \textbf{Subred IP/máscara} & \textbf{Número VLAN}\\
+\toprule
+Dirección & 192.168.10.0/24 & 10 \\ \midrule
+Jefes Sección & 192.168.20.0/24  & 20 \\ \midrule
+Maquetación & 192.168.30.0/24  & 30 \\ \midrule
+Corrección & 192.168.40.0/24  & 40 \\ \midrule
+Redacción & 192.168.50.0/24 & 50 \\ \midrule
+Servidores & 192.168.60.0/24 & 60 \\ \midrule
+Contabilidad & 192.168.70.0/24  & 70 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:VLANs}
+\end{table}
+
+Los servidores instalados de la red, se corresponden con la siguiente denominación (Tabla~\ref{tab:direccionesHosts}).
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Direcciones Servidores}
+\begin{center}
+\begin{tabular}{p{.3\textwidth}p{.2\textwidth}}
+\toprule
+\textbf{Host} & \textbf{Dirección IP}\\
+\toprule
+SVR-S0 &  192.168.110.11\\ \midrule
+SVR-S1 &  192.168.60.10\\ \midrule
+SVR-S2 & 192.168.60.11 \\ \midrule
+SVR-A & 192.168.60.20 \\ \midrule
+SVR-B & 192.168.110.10 \\ \midrule
+SVR-C & 192.168.60.21 \\ \midrule
+SVR-Z & 192.168.60.60\\
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:direccionesHosts}
+\end{table}
+
+\subsection{Protocolos de Red}
+
+En esta sección enumeraremos y describiremos los protocolos de red seleccionados para el diseño de la red. Su elección es una consecuencia directa de los requisitos técnicos y de negocio descritos anteriormente.
+
+Para obtener un alto grado de fiabilidad, utilizaremos el protocolo HSRP (Hot Standby Router Protocol). Dicho protocolo (propiedad de CISCO) actúa en la capa 3, permitiendo el despliegue de routers redundantes tolerantes a fallos y evitando así, la existencia de puntos únicos de fallo. En cuestión de disponibilidad y prestaciones, la elección del protocolo PVST (Per VLAN Spanning Tree) ha sido nuestra opción. Esté protocolo (propiedad de CISCO) actúa en la capa 2, trata cada VLAN como una red independiente, manteniendo una instancia de Spanning Tree (STP) por cada una. El protocolo Spanning Tree controla la activación o desactivación automática de los enlaces de conexión, garantizado la inexistencia de bucles en la malla de switches, garantizando la disponibilidad de las conexiones.
+
+Respecto a los protocolos de encamiento (Capa 3), la recomendación en el diseño es OSPF (Open Shortest Path First).  Es un protocolo de red para encaminamiento jerárquico de pasarela interior o Interior Gateway Protocol (IGP), que usa el algoritmo Dijkstra, para calcular la ruta más corta entre dos nodos. Favoreciendo un menor consumo del ancho de banda, minimizando retardos. Todo con el objetivo de mejorar la carga de tráfico y la fiabilidad de la infraestructura.
+
+\subsection{Seguridad}
+
+En esta sección daremos una visión mínimamente detallada sobre el modo en que se ha abordado la seguridad en el diseño de la red. 
+
+En primer lugar, no podemos permitir que la red interna de la organización se comunique directamente con el exterior, pues podría ser un punto de fuga de información. Por ello, hemos decidido introducir en el diseño una zona desmilitarizada (DMZ), a través de la cuál se permitirá el acceso a la plataforma online de noticias.
+
+La recién citada zona, contiene un servidor web, que podrá comunicarse tanto con el interior de la red para obtener datos, como al exterior para ofrecerlos. En otras palabras, dicho servidor resolverá las consultas de los clientes y las devolverá a través de la página web. Esta estrategia nos dará la cobertura necesaria para mantener la privacidad de nuestros servidores internos. En la zona desmilitarizada tambíen proveeremos el servicio DNS, implementando un DNS autorizado.
+
+La división de la estructura en dos partes, servicio externo y LAN interna es una cuestión de seguridad.
+\subsubsection{Analisis de riesgos}
+Comenzaremos realizando una identificación de los activos.(Tabla~\ref{tab:activos}).
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Identificación de activos}
+\begin{center}
+\begin{tabular}{p{.15\textwidth}p{.2\textwidth}p{.25\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{ID} &  \textbf{Descripción} & \textbf{Ubicación} & \textbf{Crítico (S/N)}\\
+\toprule
+SRV-A & Servidor interno & Edificio A &  S\\ \midrule
+SRV-B & Servidor externo & Edificio A &  S\\ \midrule
+SRV-C & Servidor contable & Edificio A &  S\\ \midrule
+SRV-Z & Servidor mantenimiento & Edificio A &  S\\ \midrule
+RT-A-F & Router frontera & Edificio A &  S\\ \midrule
+RT-A-01 & Core & Edificio A &  S\\ \midrule
+RT-A-02 & Core & Edificio A &  S\\ \midrule
+ET-A-X & Estaciones de trabajo & Edificio A &  S\\ \midrule
+SRV-SX & Servidor configuración & Edificio A &  S\\
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:activos}
+\end{table}
+
+\subsubsection{Amenazas}
+A continuación, se muestra una clasificación\footnote{El estudio de amenazas ha sido realizado en base a las recomendaciones del Instituo Nacional de Ciberseguridad\cite{Incibe}} de las amenazas principales del diseño.
+Esto es solo un pequeño índice, el desglose total, y la evaluación de riesgos, será detallada en el Plan Director de Seguridad (PDS).
+
+\begin{itemize}
+\item Naturales:
+	\begin{itemize}
+	\item Daños por fuego
+	\item Daños por inundación.
+	\item Daños por fallo eléctrico.
+	\item Desastre natural.
+	\end{itemize}
+\item Funcionales:
+	\begin{itemize}
+	\item Perdidas de información.
+	\item Modificacion de la información.
+	\item Interceptación de la informacion.
+	\item Introducción de falsa informacion.
+	\item Envenenamiento de los routers.
+	\item Envenenamiento de las estaciones de trabajo.
+	\item Acceso no autorizado
+	\item Perdida de equipos de trabajo.
+	\item Difusión de software dañino.
+	\item Caída del sistema por sobrecarga.
+	\end{itemize}
+\item Negligencias:
+	\begin{itemize}
+	\item Errores de usuarios.
+	\item Errores del administrador.
+	\item Errores de configuración.
+	\end{itemize}
+\item Sociales:
+	\begin{itemize}
+	\item Robo.
+	\item Extorsión.
+	\item Ingeniería social.
+	\item Denegación de servicio.
+	\end{itemize}
+\end{itemize}
+\subsubsection{Contramedidas}
+En esta sección se muestran las medidas preventivas tomadas para minimizar amenazas.
+\begin{itemize}
+\item Acomodación de un espacio, en condiciones de temperatura y humedad óptimas para la instalación del CPD.
+\item Para evitar todo tipo de accesos indebidos, y así mantener la información segura, estableceremos como frontera entre nuestra red interna (LAN), y el mundo exterior un cortafuegos. Su misión es el filtrado de paquetes, denegando el acceso a todos aquellos paquetes no reconocidos (posibles intenciones maliciosas), enrutando solo tráfico conocido y esperado.
+Para mayor seguridad, el router frontera, también contará con la implementación de reglas de filtrado de tráfico, así reparten la carga de análisis de paquetes.
+\item Contratación de personal cualificado, con el conocimiento adecuado para el manejo/mantemiento de la red.
+\item Prohibir la tenencia de dispositivos electrónicos personales, evitará posibles fugas de información.
+\item Prohibir las conexiones con el mundo exterior, excepto las mencionadas en este documento.
+\end{itemize}
+\subsection{Discusión}
+
+La infraestructura diseñada cumple con los requisitos del negocio, ofreciendo un alto grado de disponibilidad de la red, soportado por la redundancia de dispositivos. El diseño garantiza altas prestaciones, minimizando el tráfico de protocolos de configuración de la red, ofreciendo balanceo de carga, óptimizando el ancho de banda disponible. La estructuración de dispositivos y los esquemas de direcciones y nombres permiten una gran ampliación de la organización, escalable hasta 8000 usuarios. La división del trafico en función de su proposito garantiza el aislamiento de la información, y la integridad de la misma. Por último cabe mencionar, la posibilidad brindada de crear puestos de trabajo remoto en la organización.
+
+\section{Diseño Físico}
+
+Esta sección describe las características y usos recomendados de las tecnologías y los dispositivos elegidos para implementar el diseño.
+
+Los dispositivos elegidos para la implementación de la red, son los siguientes:
+\begin{itemize}
+\item Router Cisco 2911	(Núcleo)
+\item Switches Cisco 2960 (Capa Acceso)
+\item Switches Cisco SG-200-08P	  (Capa Distribución)
+\end{itemize}
+
+El cableado de la instalación sera UTP Cat 6. El ancho de banda previsto para la capa de acceso es de 100 Mbps, mientrás que el núcleo y la capa de distribución operarán a 1 Gbps. Se dispone de un enlace WAN para la conexión directa con la empresa de impresión.
+Los detalles de configuración de los routers se muestran en la tabla~\ref{tab:interfaces}, y los de los switches se muestran en las tablas~\ref{tab:puertos1},~\ref{tab:puertos2},~\ref{tab:puertos3},~\ref{tab:puertos4},~\ref{tab:puertos5},~\ref{tab:puertos6}.
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Interfaces Routers}
+\begin{center}
+\begin{tabular}{p{.15\textwidth}p{.10\textwidth}p{.15\textwidth}p{.1\textwidth}p{.15\textwidth}p{.15\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Router} & \textbf{Interfaz} & \textbf{Dirección IP} & \textbf{Dot 1Q} & \textbf{IP Helper} & \textbf{IP Helper 2} & \textbf{ACL} \\
+\toprule 
+RTR-A-W1 & Gi0/1 & 192.168.200.3 &  & 192.168.60.10 & 192.168.60.12 &	 \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Se0/3/0 & 200.10.20.1 &  & 192.168.60.10 & 192.168.60.12 &  \\ \midrule
+
+RTR-A-01 & Gi0/0.10	& 192.168.10.2 & 10 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/0.20 & 192.168.20.2 & 20 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/0.30 & 192.168.30.2 & 30 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/1.40 & 192.168.40.2 & 40 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/1.50 & 192.168.50.2 & 50 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/1.60 & 192.168.60.2 & 60 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/0.70 & 192.168.70.2 & 70 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/2    & 192.168.200.1 &   & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/3/0  & 192.168.100.1 &   & 192.168.60.10 & 192.168.60.12 & \\\\ \midrule
+
+RTR-A-02 & Gi0/0.10	& 192.168.10.3 & 10 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/0.20 & 192.168.20.3 & 20 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/0.30 & 192.168.30.3 & 30 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/1.40 & 192.168.40.3 & 40 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/1.50 & 192.168.50.3 & 50 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/1.60 & 192.168.60.3 & 60 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/0.70 & 192.168.70.3 & 70 & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/2    & 192.168.200.2 &   & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/3/0  & 192.168.100.2 &   & 192.168.60.10 & 192.168.60.12 & \\\\ \midrule
+
+RTR-A-F  & Gi0/1 & 192.168.110.2 &  & 192.168.60.10 & 192.168.60.12 & \\
+&Gi0/2   & 192.168.100.3 &  & 192.168.60.10 & 192.168.60.12 & \\
+&Se0/3/0 & 200.30.30.1   &  & 192.168.60.10 & 192.168.60.12 & \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:interfaces}
+\end{table}
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Puertos Switches (1)}
+\begin{center}
+\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Switch} & \textbf{Puerto} & \textbf{VLAN}  \\
+\toprule
+SW-AD-01 & Gi0/1 & Trunk \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Gi1/1 & Trunk  \\
+& Gi2/1 & Trunk  \\
+& Gi3/1 & Trunk  \\
+& Gi4/1 & Trunk  \\
+& Gi5/1 & Trunk  \\
+& Gi6/1 & Trunk  \\
+& Gi7/1 & Trunk  \\
+& Gi8/1 & Trunk  \\
+& Gi9/1 & Trunk  \\ \midrule
+SW-AD-02 & Gi0/1 & Trunk \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Gi1/1 & Trunk  \\
+& Gi2/1 & Trunk  \\
+& Gi3/1 & Trunk  \\
+& Gi4/1 & Trunk  \\
+& Gi5/1 & Trunk  \\
+& Gi6/1 & Trunk  \\
+& Gi7/1 & Trunk  \\
+& Gi8/1 & Trunk  \\
+& Gi9/1 & Trunk  \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:puertos1}
+\end{table}
+\begin{table}[htbp]
+\small \sffamily
+\caption{Puertos Switches (2)}
+\begin{center}
+\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Switch} & \textbf{Puerto} & \textbf{VLAN}  \\
+\toprule
+SW-AA-01 & Fa0/1 & 10 \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Fa0/1 & 10\\
+& Fa0/2 & 10\\
+& Fa0/3 & 10\\
+& Fa0/4 & 10\\
+& Fa0/5 & 10\\
+& Fa0/6 & 10\\
+& Fa0/7 & 10\\
+& Fa0/8 & 10\\
+& Fa0/9 & 70\\
+& Fa0/10 & 70\\
+& Fa0/11 & 70\\
+& Fa0/12 & 70\\
+& Fa0/13 & 70\\
+& Fa0/14 & 70\\
+& Fa0/15 & 70\\
+& Fa0/16 & 70\\
+& Fa0/17 & 20\\
+& Fa0/18 & 20\\
+& Fa0/19 & 20\\
+& Fa0/20 & 20\\
+& Fa0/21 & 20\\
+& Fa0/22 & 20\\
+& Fa0/23 & 20\\
+& Fa0/24 & 20\\
+& Gi0/1 & Trunk  \\
+& Gi0/2 & Trunk  \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:puertos2}
+\end{table}
+\begin{table}[htbp]
+\small \sffamily
+\caption{Puertos Switches (3)}
+\begin{center}
+\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Switch} & \textbf{Puerto} & \textbf{VLAN}  \\
+\toprule
+SW-AA-02 & Fa0/1 & 30 \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Fa0/1 & 30\\
+& Fa0/2 & 30\\
+& Fa0/3 & 30\\
+& Fa0/4 & 30\\
+& Fa0/5 & 30\\
+& Fa0/6 & 30\\
+& Fa0/7 & 30\\
+& Fa0/8 & 30\\
+& Fa0/9 & 40\\
+& Fa0/10 & 40\\
+& Fa0/11 & 40\\
+& Fa0/12 & 40\\
+& Fa0/13 & 40\\
+& Fa0/14 & 40\\
+& Fa0/15 & 40\\
+& Fa0/16 & 40\\
+& Fa0/17 & 50\\
+& Fa0/18 & 50\\
+& Fa0/19 & 50\\
+& Fa0/20 & 50\\
+& Fa0/21 & 50\\
+& Fa0/22 & 50\\
+& Fa0/23 & 50\\
+& Fa0/24 & 50\\
+& Gi0/1 & Trunk  \\
+& Gi0/2 & Trunk  \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:puertos3}
+\end{table}
+\begin{table}[htbp]
+\small \sffamily
+\caption{Puertos Switches (4)}
+\begin{center}
+\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Switch} & \textbf{Puerto} & \textbf{VLAN}  \\
+\toprule
+SW-AA-03 & Fa0/1 & 30 \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Fa0/1 & 30\\
+& Fa0/2 & 30\\
+& Fa0/3 & 30\\
+& Fa0/4 & 30\\
+& Fa0/5 & 30\\
+& Fa0/6 & 30\\
+& Fa0/7 & 30\\
+& Fa0/8 & 30\\
+& Fa0/9 & 40\\
+& Fa0/10 & 40\\
+& Fa0/11 & 40\\
+& Fa0/12 & 40\\
+& Fa0/13 & 40\\
+& Fa0/14 & 40\\
+& Fa0/15 & 40\\
+& Fa0/16 & 40\\
+& Fa0/17 & 50\\
+& Fa0/18 & 50\\
+& Fa0/19 & 50\\
+& Fa0/20 & 50\\
+& Fa0/21 & 50\\
+& Fa0/22 & 50\\
+& Fa0/23 & 50\\
+& Fa0/24 & 50\\
+& Gi0/1 & Trunk  \\
+& Gi0/2 & Trunk  \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:puertos4}
+\end{table}
+\begin{table}[htbp]
+\small \sffamily
+\caption{Puertos Switches (5)}
+\begin{center}
+\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Switch} & \textbf{Puerto} & \textbf{VLAN}  \\
+\toprule
+SW-AA-04 & Fa0/1 & 30 \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Fa0/1 & 30\\
+& Fa0/2 & 30\\
+& Fa0/3 & 30\\
+& Fa0/4 & 30\\
+& Fa0/5 & 30\\
+& Fa0/6 & 30\\
+& Fa0/7 & 30\\
+& Fa0/8 & 30\\
+& Fa0/9 & 40\\
+& Fa0/10 & 40\\
+& Fa0/11 & 40\\
+& Fa0/12 & 40\\
+& Fa0/13 & 40\\
+& Fa0/14 & 40\\
+& Fa0/15 & 40\\
+& Fa0/16 & 40\\
+& Fa0/17 & 50\\
+& Fa0/18 & 50\\
+& Fa0/19 & 50\\
+& Fa0/20 & 50\\
+& Fa0/21 & 50\\
+& Fa0/22 & 50\\
+& Fa0/23 & 50\\
+& Fa0/24 & 50\\
+& Gi0/1 & Trunk  \\
+& Gi0/2 & Trunk  \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:puertos4}
+\end{table}
+\begin{table}[htbp]
+\small \sffamily
+\caption{Puertos Switches (5)}
+\begin{center}
+\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Switch} & \textbf{Puerto} & \textbf{VLAN}  \\
+\toprule
+SW-AA-05 & Fa0/1 & 30 \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Fa0/1 & 30\\
+& Fa0/2 & 30\\
+& Fa0/3 & 30\\
+& Fa0/4 & 30\\
+& Fa0/5 & 30\\
+& Fa0/6 & 30\\
+& Fa0/7 & 30\\
+& Fa0/8 & 30\\
+& Fa0/9 & 40\\
+& Fa0/10 & 40\\
+& Fa0/11 & 40\\
+& Fa0/12 & 40\\
+& Fa0/13 & 40\\
+& Fa0/14 & 40\\
+& Fa0/15 & 40\\
+& Fa0/16 & 40\\
+& Fa0/17 & 50\\
+& Fa0/18 & 50\\
+& Fa0/19 & 50\\
+& Fa0/20 & 50\\
+& Fa0/21 & 50\\
+& Fa0/22 & 50\\
+& Fa0/23 & 50\\
+& Fa0/24 & 50\\
+& Gi0/1 & Trunk  \\
+& Gi0/2 & Trunk  \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:puertos5}
+\end{table}
+\begin{table}[htbp]
+\small \sffamily
+\caption{Puertos Switches (6)}
+\begin{center}
+\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.1\textwidth}}
+\toprule
+\textbf{Switch} & \textbf{Puerto} & \textbf{VLAN}  \\
+\toprule
+SW-AA-06 & Fa0/1 & 60 \\ %\midrule %comentado evita repetir el nombre del dispositivo
+& Fa0/1 & 60\\
+& Fa0/2 & 60\\
+& Fa0/3 & 60\\
+& Fa0/4 & Trunk,60,70,10\\
+& Fa0/5 & 60\\
+& Fa0/6 & 60\\
+& Fa0/7 & 60\\
+& Fa0/8 & 60\\
+& Fa0/9 & 60\\
+& Fa0/10 & 60\\
+& Fa0/11 & 60\\
+& Fa0/12 & 60\\
+& Fa0/13 & 60\\
+& Fa0/14 & 60\\
+& Fa0/15 & 60\\
+& Fa0/16 & 60\\
+& Fa0/17 & 60\\
+& Fa0/18 & 60\\
+& Fa0/19 & 60\\
+& Fa0/20 & 60\\
+& Fa0/21 & 60\\
+& Fa0/22 & 60\\
+& Fa0/23 & 60\\
+& Fa0/24 & 60\\
+& Gi0/1 & Trunk  \\
+& Gi0/2 & Trunk  \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:puertos6}
+\end{table}
+
+\section{Pruebas del Diseño}
+
+En esta sección se indicarán los resultados de las pruebas realizadas para validar el diseño propuesto. Se describirán los objetivos de las pruebas, el test realizado y el resultado obtenido.(Tabla~\ref{tab:tests}).
+
+\begin{table}[htbp]
+\small \sffamily
+\caption{Pruebas}
+\begin{center}
+\begin{tabular}{p{.4\textwidth}p{.35\textwidth}p{.15\textwidth}}
+\toprule
+\textbf{Objetivo del Test} &  \textbf{Prueba Realizada} & \textbf{Resultado}\\
+\toprule
+Comunicación entre departamentos y servidores centrales & Ping entre ET1-A-01 y SRV-A & Positivo  \\ \midrule
+Comunicación entre departamento de dirección y otros departamentos& Ping entre ET1-A-01 y ET2-A-03 & Positivo\\ \midrule
+Comunicación entre departamento de dirección con servidor web mediante DNS& HTTP ENTRE ET1-A-01 y SRV-WEB & Positivo \\ \midrule
+Bloqueo de Conexión a internet de todos los departamentos excepto dirección & Ping entre ET2-A-03 y RT-ISP & Positivo \\ \midrule
+Comunicación con servicios de impresión de los departamentos dirección y jefes de sección& Ping entre ET1-A-01 y SRV-Impresion & Positivo\\ \midrule
+Funcionamiento de DHCP primario& ET1-A-01 pide DHCP & Positivo\\ \midrule
+Funcionamiento de DHCP secundario en caso de fallo del primario& SRV-DHCP apagado y ET1-A-01 pide DHCP  & Positivo \\ \midrule
+Funcionamiento de redundancia en routers con HSRP & RT-1 apagado RT2 da acceso & Positivo \\ \midrule
+Clientes pueden acceder a servicios DNS y WEB&  HTTP entre CLI1 y SRV-WEB& Positivo \\ \midrule
+Teletrabajo puede comunicarse con departamento de dirección & Ping entre TELE1 y ET1-A-01 & Positivo \\ \midrule
+Departamento de dirección puede comunicarse con el exterior&Ping ET1-A-01 a RT-ISP  &Positivo \\ 
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:tests}
+\end{table}
+
+%----------------------------------------------------------------------------------------
+%	APENDICES
+%----------------------------------------------------------------------------------------
+
+
+\appendix
+
+\section{Apéndices}
+
+
+\subsection{Configuración}
+A continuación se puede ver la configuración de los routers.
+
+\subsubsection{Configuración de Router-A-F}
+{
+\footnotesize \sffamily
+%Colocar a continuación del verbatim el texto tal y como quiere que aparezca
+\begin{verbatim}
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface GigabitEthernet0/1
+ ip address 192.168.110.2 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ ip address 192.168.100.3 255.255.255.0
+ ip access-group 101 in
+ ip nat inside
+ duplex auto
+ speed auto
+!
+interface Serial0/3/0
+ ip address 200.30.30.1 255.255.255.0
+ ip access-group 102 in
+ ip nat outside
+ clock rate 2000000
+!
+interface Serial0/3/1
+ no ip address
+ clock rate 2000000
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ log-adjacency-changes
+ network 192.168.100.0 0.0.0.255 area 1
+ network 192.168.110.0 0.0.0.255 area 1
+ default-information originate
+!
+router rip
+!
+ip nat inside source list 1 interface Serial0/3/0 overload
+ip classless
+ip route 0.0.0.0 0.0.0.0 200.30.30.2 
+!
+ip flow-export version 9
+!
+!
+access-list 1 permit 192.168.100.0 0.0.0.255
+access-list 102 permit ip host 10.10.10.10 192.168.10.0 0.0.0.255
+access-list 102 permit tcp any host 192.168.110.10 eq www
+access-list 102 permit udp any host 192.168.110.11 eq domain
+access-list 102 permit tcp any any established
+access-list 102 permit icmp any any echo-reply
+access-list 102 permit icmp any any unreachable
+access-list 102 deny ip any any
+access-list 101 permit ospf any any
+access-list 101 permit ip 192.168.10.0 0.0.0.255 any
+access-list 101 deny ip any any
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+\end{verbatim}
+}
+\subsubsection{Configuración de Router-A-01}
+{
+\footnotesize \sffamily
+%Colocar a continuación del verbatim el texto tal y como quiere que aparezca
+\begin{verbatim}
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.2 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 103 out
+ standby 1 ip 192.168.10.1
+ standby 1 priority 150
+ standby 1 preempt
+!
+interface GigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.2 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 104 out
+ standby 1 ip 192.168.20.1
+ standby 1 priority 150
+ standby 1 preempt
+!
+interface GigabitEthernet0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.30.2 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 105 out
+ standby 1 ip 192.168.30.1
+ standby 1 priority 150
+ standby 1 preempt
+!
+interface GigabitEthernet0/0.70
+ encapsulation dot1Q 70
+ ip address 192.168.70.2 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 106 out
+ standby 1 ip 192.168.70.1
+ standby 1 priority 150
+ standby 1 preempt
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1.40
+ encapsulation dot1Q 40
+ ip address 192.168.40.2 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 107 out
+ standby 1 ip 192.168.40.1
+!
+interface GigabitEthernet0/1.50
+ encapsulation dot1Q 50
+ ip address 192.168.50.2 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 108 out
+ standby 1 ip 192.168.50.1
+!
+interface GigabitEthernet0/1.60
+ encapsulation dot1Q 60
+ ip address 192.168.60.2 255.255.255.0
+ ip helper-address 192.168.60.12
+ standby 1 ip 192.168.60.1
+!
+interface GigabitEthernet0/2
+ ip address 192.168.200.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0/0
+ ip address 192.168.100.1 255.255.255.0
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ log-adjacency-changes
+ network 192.168.10.0 0.0.0.255 area 1
+ network 192.168.20.0 0.0.0.255 area 1
+ network 192.168.30.0 0.0.0.255 area 1
+ network 192.168.40.0 0.0.0.255 area 1
+ network 192.168.50.0 0.0.0.255 area 1
+ network 192.168.60.0 0.0.0.255 area 1
+ network 192.168.70.0 0.0.0.255 area 1
+ network 192.168.100.0 0.0.0.255 area 1
+ network 192.168.200.0 0.0.0.255 area 1
+!
+router rip
+!
+ip classless
+!
+ip flow-export version 9
+!
+!
+access-list 103 deny ip 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 103 deny ip 192.168.10.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 103 deny ip 192.168.10.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 103 deny ip 192.168.10.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 103 permit ip 192.168.10.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 106 deny ip 192.168.70.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 106 deny ip 192.168.70.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 106 deny ip 192.168.70.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 106 deny ip 192.168.70.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 106 permit ip 192.168.70.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 107 deny ip 192.168.40.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 107 deny ip 192.168.40.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 107 deny ip 192.168.40.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 107 deny ip 192.168.40.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 107 deny ip 192.168.40.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 107 permit ip any any
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 108 deny ip 192.168.50.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 108 deny ip 192.168.50.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 108 deny ip 192.168.50.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 108 deny ip 192.168.50.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 108 deny ip 192.168.50.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 108 permit ip any any
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.70.0 0.0.0.255
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+\end{verbatim}
+}
+\subsubsection{Configuración de Router-A-02}
+{
+\footnotesize \sffamily
+%Colocar a continuación del verbatim el texto tal y como quiere que aparezca
+\begin{verbatim}
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.3 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 103 out
+ standby 1 ip 192.168.10.1
+!
+interface GigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.3 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 104 out
+ standby 1 ip 192.168.20.1
+!
+interface GigabitEthernet0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.30.3 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 105 out
+ standby 1 ip 192.168.30.1
+!
+interface GigabitEthernet0/0.70
+ encapsulation dot1Q 70
+ ip address 192.168.70.3 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 106 out
+ standby 1 ip 192.168.70.1
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1.40
+ encapsulation dot1Q 40
+ ip address 192.168.40.3 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 107 out
+ standby 1 ip 192.168.40.1
+ standby 1 priority 150
+ standby 1 preempt
+!
+interface GigabitEthernet0/1.50
+ encapsulation dot1Q 50
+ ip address 192.168.50.3 255.255.255.0
+ ip helper-address 192.168.60.10
+ ip helper-address 192.168.60.12
+ ip access-group 108 out
+ standby 1 ip 192.168.50.1
+ standby 1 priority 150
+ standby 1 preempt
+!
+interface GigabitEthernet0/1.60
+ encapsulation dot1Q 60
+ ip address 192.168.60.3 255.255.255.0
+ ip helper-address 192.168.60.12
+ standby 1 ip 192.168.60.1
+ standby 1 priority 150
+ standby 1 preempt
+!
+interface GigabitEthernet0/2
+ ip address 192.168.200.2 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/3/0
+ ip address 192.168.100.2 255.255.255.0
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ log-adjacency-changes
+ network 192.168.10.0 0.0.0.255 area 1
+ network 192.168.20.0 0.0.0.255 area 1
+ network 192.168.30.0 0.0.0.255 area 1
+ network 192.168.40.0 0.0.0.255 area 1
+ network 192.168.50.0 0.0.0.255 area 1
+ network 192.168.60.0 0.0.0.255 area 1
+ network 192.168.70.0 0.0.0.255 area 1
+ network 192.168.100.0 0.0.0.255 area 1
+ network 192.168.200.0 0.0.0.255 area 1
+!
+router rip
+!
+ip classless
+!
+ip flow-export version 9
+!
+!
+access-list 103 deny ip 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 103 deny ip 192.168.10.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 103 deny ip 192.168.10.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 103 deny ip 192.168.10.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 103 permit ip 192.168.10.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 104 deny ip 192.168.20.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 105 deny ip 192.168.30.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 106 deny ip 192.168.70.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 106 deny ip 192.168.70.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 106 deny ip 192.168.70.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 106 deny ip 192.168.70.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 106 permit ip 192.168.70.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.70.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.50.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 107 permit ip 192.168.40.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.40.0 0.0.0.255
+access-list 108 permit ip 192.168.50.0 0.0.0.255 192.168.70.0 0.0.0.255
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+\end{verbatim}
+}
+\subsubsection{Configuración de Router-A-W1}
+{
+\footnotesize \sffamily
+%Colocar a continuación del verbatim el texto tal y como quiere que aparezca
+\begin{verbatim}
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ ip address 192.168.200.3 255.255.255.0
+ ip access-group 111 in
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ no ip address
+ duplex auto
+ speed auto
+!
+interface Serial0/3/0
+ ip address 200.10.20.1 255.255.255.0
+ ip access-group 112 in
+ clock rate 2000000
+!
+interface Serial0/3/1
+ no ip address
+ clock rate 2000000
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ log-adjacency-changes
+ network 200.10.20.0 0.0.0.255 area 1
+ network 192.168.200.0 0.0.0.255 area 1
+!
+router rip
+!
+ip classless
+!
+ip flow-export version 9
+!
+!
+access-list 111 permit ospf any any
+access-list 111 permit ip 192.168.10.0 0.0.0.255 any
+access-list 111 permit ip 192.168.20.0 0.0.0.255 any
+access-list 111 permit ip 192.168.60.0 0.0.0.255 any
+access-list 111 deny ip any any
+access-list 112 permit ospf any any
+access-list 112 permit ip 172.16.0.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 112 permit ip 172.16.0.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 112 permit ip 172.16.0.0 0.0.0.255 192.168.60.0 0.0.0.255
+access-list 112 deny ip any any
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+\end{verbatim}
+}
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAFIA
+%----------------------------------------------------------------------------------------
+
+% Se fija el estilo de referencias bibliográficas.
+
+\bibliographystyle{alpha}
+
+% Incluye una sección con las referencias citadas de entre las del archivo .bib indicado (se omite la extension).
+% Para conseguir la inclusión debe invocarse latex, bibtex, latex y otra vez latex. Para más información ver manual.
+
+\bibliography{referencias}
+
+%----------------------------------------------------------------------------------------
+
+
+\end{document}
